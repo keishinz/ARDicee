@@ -21,13 +21,38 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         sceneView.delegate = self
         
         // Show statistics such as fps and timing information
-        sceneView.showsStatistics = true
+//        sceneView.showsStatistics = true
         
         // Create a new scene
-        let scene = SCNScene(named: "art.scnassets/ship.scn")!
+//        let scene = SCNScene(named: "art.scnassets/ship.scn")!
         
         // Set the scene to the view
-        sceneView.scene = scene
+//        sceneView.scene = scene
+        
+        let cube = SCNBox(width: 0.1, height: 0.1, length: 0.1, chamferRadius: 0.01)
+        let cubeMaterial = SCNMaterial()
+        cubeMaterial.diffuse.contents = UIColor.red
+        cube.materials = [cubeMaterial]
+        
+        let sphere = SCNSphere(radius: 0.2)
+        let sphereMaterial = SCNMaterial()
+        sphereMaterial.diffuse.contents = UIImage(named: "art.scnassets/8k_jupiter.jpg")
+        sphere.materials = [sphereMaterial]
+        
+        
+        let cubeNode = SCNNode()
+        cubeNode.position = SCNVector3(x: 0.1, y: 0.5, z: -1)
+        cubeNode.geometry = cube
+        
+        let sphereNode = SCNNode()
+        sphereNode.position = SCNVector3(x: -1, y: 0, z: -1)
+        sphereNode.geometry = sphere
+        
+        sceneView.scene.rootNode.addChildNode(cubeNode)
+        sceneView.scene.rootNode.addChildNode(sphereNode)
+        sceneView.autoenablesDefaultLighting = true
+//        sceneView.automaticallyUpdatesLighting = true
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
