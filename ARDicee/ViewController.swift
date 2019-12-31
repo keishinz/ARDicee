@@ -11,8 +11,20 @@ import SceneKit
 import ARKit
 
 class ViewController: UIViewController, ARSCNViewDelegate {
+    
+    var diceArray = [SCNNode]()
 
     @IBOutlet var sceneView: ARSCNView!
+    @IBAction func rollAllDicess(_ sender: UIBarButtonItem) {
+        rollAll()
+    }
+    @IBAction func clearAllDicess(_ sender: UIBarButtonItem) {
+        if !diceArray.isEmpty {
+            for dice in diceArray {
+                dice.removeFromParentNode()
+            }
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -113,23 +125,44 @@ class ViewController: UIViewController, ARSCNViewDelegate {
                         z: hitResult.worldTransform.columns.3.z
                     )
                     
+                    diceArray.append(diceNode)
                     sceneView.scene.rootNode.addChildNode(diceNode)
                     
-                    let randomX = Float(Int.random(in: 1 ... 4)) * (Float.pi / 2)
-                    let randomY = Float(Int.random(in: 1 ... 4)) * (Float.pi / 2)
-                    let randomZ = Float(Int.random(in: 1 ... 4)) * (Float.pi / 2)
-                    
-                    diceNode.runAction(SCNAction.rotateBy(x: CGFloat(randomX * 3),
-                                                          y: CGFloat(randomY * 3),
-                                                          z: CGFloat(randomZ * 3),
-                                                          duration: 1)
-                    )
+                    roll(dice: diceNode)
 
                 }
                 sceneView.autoenablesDefaultLighting = true
             }
             
         }
+    }
+    
+    func rollAll() {
+        if !diceArray.isEmpty {
+            for dice in diceArray {
+                roll(dice: dice)
+            }
+        }
+    }
+    
+    func roll(dice: SCNNode) {
+        let randomX = Float(Int.random(in: 1 ... 4)) * (Float.pi / 2)
+        let randomY = Float(Int.random(in: 1 ... 4)) * (Float.pi / 2)
+        let randomZ = Float(Int.random(in: 1 ... 4)) * (Float.pi / 2)
+        
+        dice.runAction(SCNAction.rotateBy(x: CGFloat(randomX * 3),
+                                              y: CGFloat(randomY * 3),
+                                              z: CGFloat(randomZ * 3),
+                                              duration: 1)
+        )
+    }
+    
+    override func motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
+        rollAll()
+    }
+    
+    override var canBecomeFirstResponder: Bool{
+        return true
     }
     
     func session(_ session: ARSession, didFailWithError error: Error) {
