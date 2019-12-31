@@ -94,6 +94,44 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     }
 */
     
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if let touch = touches.first {
+            let touchLocation = touch.location(in: sceneView)
+            let results = sceneView.hitTest(touchLocation, types: .existingPlaneUsingExtent)
+            
+//            if !results.isEmpty {
+//                print("touched the plane")
+//            } else {
+//                print("touched somewhere else")
+//            }
+            if let hitResult = results.first {
+                let diceScene = SCNScene(named: "art.scnassets/diceCollada.scn")!
+                if let diceNode = diceScene.rootNode.childNode(withName: "Dice", recursively: true) {
+                    diceNode.position = SCNVector3(
+                        x: hitResult.worldTransform.columns.3.x,
+                        y: hitResult.worldTransform.columns.3.y + diceNode.boundingSphere.radius,
+                        z: hitResult.worldTransform.columns.3.z
+                    )
+                    
+                    sceneView.scene.rootNode.addChildNode(diceNode)
+                    
+                    let randomX = Float(Int.random(in: 1 ... 4)) * (Float.pi / 2)
+                    let randomY = Float(Int.random(in: 1 ... 4)) * (Float.pi / 2)
+                    let randomZ = Float(Int.random(in: 1 ... 4)) * (Float.pi / 2)
+                    
+                    diceNode.runAction(SCNAction.rotateBy(x: CGFloat(randomX * 3),
+                                                          y: CGFloat(randomY * 3),
+                                                          z: CGFloat(randomZ * 3),
+                                                          duration: 1)
+                    )
+
+                }
+                sceneView.autoenablesDefaultLighting = true
+            }
+            
+        }
+    }
+    
     func session(_ session: ARSession, didFailWithError error: Error) {
         // Present an error message to the user
         
@@ -131,30 +169,6 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         }
     }
     
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if let touch = touches.first {
-            let touchLocation = touch.location(in: sceneView)
-            let results = sceneView.hitTest(touchLocation, types: .existingPlaneUsingExtent)
-            
-//            if !results.isEmpty {
-//                print("touched the plane")
-//            } else {
-//                print("touched somewhere else")
-//            }
-            if let hitResult = results.first {
-                let diceScene = SCNScene(named: "art.scnassets/diceCollada.scn")!
-                if let diceNode = diceScene.rootNode.childNode(withName: "Dice", recursively: true) {
-                    diceNode.position = SCNVector3(
-                        x: hitResult.worldTransform.columns.3.x,
-                        y: hitResult.worldTransform.columns.3.y + diceNode.boundingSphere.radius,
-                        z: hitResult.worldTransform.columns.3.z
-                    )
-                    sceneView.scene.rootNode.addChildNode(diceNode)
-                }
-                sceneView.autoenablesDefaultLighting = true
-            }
-            
-        }
-    }
+
     
 }
